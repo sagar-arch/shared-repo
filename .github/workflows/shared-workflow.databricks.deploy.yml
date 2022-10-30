@@ -1,0 +1,48 @@
+# This is the template work flow for deploying db notebook and other asset from dev branch to main branch in dev environment
+# Required Env varaible and secrets
+
+# DATABRICKS_TOKEN
+# DATABRICKS_HOST
+# DATABRICKS_MANAGED_DIRECTORY
+
+name: deploy-brDevNotebook-to-brMainNotebook
+#Control when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      DATABRICKS_HOST:
+        required: true
+        type: string
+      DATABRICKS_MANAGED_DIRECTORY:
+        required: true
+        type: string
+      ENVIRONMENT:
+        required: true
+        type: string
+    secrets:
+      DATABRICKS_TOKEN:
+        required: true
+jobs:
+  workflow-dev:
+    environment: ${{input.ENVIRONMENT}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout-code
+        uses: actions/checkout@v3
+      #1. install databricks cli
+      - name: install-databricks-cli
+        uses: microsoft/install-databricks-cli@v1.0.0
+      #2. delete previuos managed databricks directory in repository
+      - name : databricks-workspace-delete-directories
+        continue-on-error: true
+        env:
+          DATABRICKS_HOST: ${{inputs.DATABRICKS_HOST}}
+          DATABRICKS_TOKEN: ${{secrects.DATABRICKS_TOKEN}}
+        run: |
+          databricks workspace delete -r ${{input.DATABRICKS_MANAGED_DIRECTORY}}
+      #3. Deploy stack defined in config.json
+      - name: databricks-deploy
+        env:
+          DATABRICKS_HOST: ${{inputs.DATABRICKS_HOST}}
+          DATABRICKS_TOKEN: ${{secrets.DATABRICKS_TOKEN}}
+        run: databricks stack deploy -o ./config.json
