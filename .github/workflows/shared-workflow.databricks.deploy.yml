@@ -39,7 +39,7 @@ jobs:
           DATABRICKS_HOST: ${{inputs.DATABRICKS_HOST}}
           DATABRICKS_TOKEN: ${{secrets.DATABRICKS_TOKEN}}
         run: |
-          databricks workspace delete -r ${{input.DATABRICKS_MANAGED_DIRECTORY}}
+          databricks workspace delete -r ${{inputs.DATABRICKS_MANAGED_DIRECTORY}}
       #3. Deploy stack defined in config.json
       - name: databricks-deploy
         env:
