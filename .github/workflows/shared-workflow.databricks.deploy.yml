@@ -24,7 +24,7 @@ on:
         required: true
 jobs:
   workflow-dev:
-    environment: ${{input.ENVIRONMENT}}
+    environment: ${{inputs.ENVIRONMENT}}
     runs-on: ubuntu-latest
     steps:
       - name: checkout-code
@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true
         env:
           DATABRICKS_HOST: ${{inputs.DATABRICKS_HOST}}
-          DATABRICKS_TOKEN: ${{secrects.DATABRICKS_TOKEN}}
+          DATABRICKS_TOKEN: ${{secrets.DATABRICKS_TOKEN}}
         run: |
           databricks workspace delete -r ${{input.DATABRICKS_MANAGED_DIRECTORY}}
       #3. Deploy stack defined in config.json
